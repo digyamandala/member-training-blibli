@@ -1,0 +1,5 @@
+com/company/memberapp/entity/Member.class
+com/company/memberapp/controller/MemberController.class
+com/company/memberapp/MemberAppApplication.class
+com/company/memberapp/service/MemberServiceImpl.class
+com/company/memberapp/service/MemberService.class

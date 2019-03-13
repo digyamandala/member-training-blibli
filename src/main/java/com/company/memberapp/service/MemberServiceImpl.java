@@ -1,57 +1,60 @@
 package com.company.memberapp.service;
 
-import com.company.memberapp.Member;
+import com.company.memberapp.entity.Member;
+import com.company.memberapp.repository.MemberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Component
 public class MemberServiceImpl implements MemberService{
-    private ArrayList<Member> members = new ArrayList<>();
+
+    private MemberRepository memberRepository;
+
+    @Autowired
+    public MemberServiceImpl(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
+
 
     @Override
-    public Member create(Member member) {
-        members.add(member);
-        return member;
+    public Mono<Member> create(Member member) {
+        return memberRepository.save(member);
     }
 
     @Override
-    public Member update(Member member) {
-        for(int i = 0 ; i < members.size() ; i++) {
-            if(members.get(i).getUserid().equals(member.getUserid())) {
-                members.set(i, member);
-                return members.get(i);
-            }
+    public Mono<Member> update(Member member) {
+        Mono<Member> memberMono = memberRepository.findById(member.getId());
+        if(memberMono != null){
+            return memberRepository.save(member);
         }
         return null;
     }
 
     @Override
-    public Member delete(String id) {
-        Member curr;
-        for(int i = 0 ; i < members.size() ; i++) {
-            curr = members.get(i);
-            if(id.equals(curr.getUserid())) {
-                members.remove(curr);
-                return curr;
-            }
-        }
-        return null;
+    public Mono<Member> delete(String id) {
+        return memberRepository.removeMemberById(id);
     }
 
     @Override
-    public Member findById(String id) {
-        for(int i = 0 ; i < members.size() ; i++) {
-            if(id.equals(members.get(i).getUserid())) {
-                return members.get(i);
-            }
-        }
-        return null;
+    public Mono<Member> findById(String id) {
+        return memberRepository.findById(id);
     }
 
     @Override
-    public List<Member> findAll() {
-        return members;
+    public Flux<Member> findAll() {
+        return memberRepository.findAll();
     }
+
+    @Override
+    public Mono<Member> findByEmail(String email) {
+        return memberRepository.findByEmail(email);
+    }
+
+    @Override
+    public Flux<Member> findByName(String name) {
+        return memberRepository.findByName(name);
+    }
+
 }

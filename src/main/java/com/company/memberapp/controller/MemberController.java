@@ -1,21 +1,26 @@
 package com.company.memberapp.controller;
 
-import com.company.memberapp.Member;
+import com.company.memberapp.entity.Member;
 import com.company.memberapp.service.MemberService;
+import com.company.memberapp.validation.ValidationHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @RestController
 public class MemberController {
 
     private MemberService memberService;
+    private ValidationHelper validationHelper;
 
-    public MemberController(MemberService memberService) {
+    @Autowired
+    public MemberController(MemberService memberService, ValidationHelper validationHelper) {
         this.memberService = memberService;
+        this.validationHelper = validationHelper;
     }
-
 
     @RequestMapping(
             value = "/members",
@@ -23,9 +28,11 @@ public class MemberController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public Member create(@RequestBody Member mb){
+    public Mono<Member> create(@RequestBody Member mb){
 
-        return memberService.create(mb);
+        return validationHelper.validate(mb)
+                .flatMap( data -> memberService.create(mb))
+                .subscribeOn(Schedulers.elastic());
     }
 
     @RequestMapping(
@@ -33,9 +40,32 @@ public class MemberController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Member findById(@PathVariable("idMember") String id){
+    public Mono<Member> findById(@PathVariable("idMember") String id){
 
-        return memberService.findById(id);
+        return memberService.findById(id)
+                .subscribeOn(Schedulers.elastic());
+    }
+
+    @RequestMapping(
+            value = "/members/{memberName}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public Flux<Member> findByName(@PathVariable("memberName") String memberName){
+
+        return memberService.findByName(memberName)
+                .subscribeOn(Schedulers.elastic());
+    }
+
+    @RequestMapping(
+            value = "/members/{memberEmail}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public Mono<Member> findByEmail(@PathVariable("memberEmail") String memberEmail){
+
+        return memberService.findByEmail(memberEmail)
+                .subscribeOn(Schedulers.elastic());
     }
 
 
@@ -44,17 +74,19 @@ public class MemberController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public List<Member> findAll() {
-        return memberService.findAll();
+    public Flux<Member> findAll() {
+        return memberService.findAll()
+                .subscribeOn(Schedulers.elastic());
     }
 
     @RequestMapping(
-            value = "/member/{idMember}",
+            value = "/members/{idMember}",
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Member delete(@PathVariable("idMember") String id){
-        return memberService.delete(id);
+    public Mono<Member> delete(@PathVariable("idMember") String id){
+        return memberService.delete(id)
+                .subscribeOn(Schedulers.elastic());
     }
 
     @RequestMapping(
@@ -62,7 +94,10 @@ public class MemberController {
             method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Member update(@RequestBody Member mb){
-        return memberService.update(mb);
+    public Mono<Member> update(@RequestBody Member mb) {
+        return validationHelper.validate(mb)
+                .flatMap( data -> memberService.update(mb))
+                .subscribeOn(Schedulers.elastic());
+
     }
 }
