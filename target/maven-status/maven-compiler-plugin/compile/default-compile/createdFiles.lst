@@ -1,5 +1,13 @@
-com/company/memberapp/entity/Member.class
+com/company/memberapp/repository/MemberRepository.class
 com/company/memberapp/controller/MemberController.class
+com/company/memberapp/entity/ApiKeyHandlerArgumentResolver.class
+com/company/memberapp/entity/ApiKey.class
 com/company/memberapp/MemberAppApplication.class
+com/company/memberapp/entity/Member.class
+com/company/memberapp/controller/ErrorController.class
+com/company/memberapp/entity/ApiKeyException.class
+com/company/memberapp/validation/EmailUnique.class
+com/company/memberapp/validation/ValidationHelper.class
+com/company/memberapp/validation/EmailUniqueValidator.class
 com/company/memberapp/service/MemberServiceImpl.class
 com/company/memberapp/service/MemberService.class

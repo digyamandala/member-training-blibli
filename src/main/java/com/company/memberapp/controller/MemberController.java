@@ -1,5 +1,6 @@
 package com.company.memberapp.controller;
 
+import com.company.memberapp.entity.ApiKey;
 import com.company.memberapp.entity.Member;
 import com.company.memberapp.service.MemberService;
 import com.company.memberapp.validation.ValidationHelper;
@@ -28,7 +29,7 @@ public class MemberController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public Mono<Member> create(@RequestBody Member mb){
+    public Mono<Member> create(@RequestBody Member mb, ApiKey apiKey){
 
         return validationHelper.validate(mb)
                 .flatMap( data -> memberService.create(mb))
@@ -40,7 +41,7 @@ public class MemberController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Mono<Member> findById(@PathVariable("idMember") String id){
+    public Mono<Member> findById(@PathVariable("idMember") String id, ApiKey apiKey){
 
         return memberService.findById(id)
                 .subscribeOn(Schedulers.elastic());
@@ -51,7 +52,7 @@ public class MemberController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Flux<Member> findByName(@PathVariable("memberName") String memberName){
+    public Flux<Member> findByName(@PathVariable("memberName") String memberName, ApiKey apiKey){
 
         return memberService.findByName(memberName)
                 .subscribeOn(Schedulers.elastic());
@@ -62,7 +63,7 @@ public class MemberController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Mono<Member> findByEmail(@PathVariable("memberEmail") String memberEmail){
+    public Mono<Member> findByEmail(@PathVariable("memberEmail") String memberEmail, ApiKey apiKey){
 
         return memberService.findByEmail(memberEmail)
                 .subscribeOn(Schedulers.elastic());
@@ -74,7 +75,7 @@ public class MemberController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Flux<Member> findAll() {
+    public Flux<Member> findAll(ApiKey apiKey) {
         return memberService.findAll()
                 .subscribeOn(Schedulers.elastic());
     }
@@ -84,7 +85,7 @@ public class MemberController {
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Mono<Member> delete(@PathVariable("idMember") String id){
+    public Mono<Member> delete(@PathVariable("idMember") String id, ApiKey apiKey){
         return memberService.delete(id)
                 .subscribeOn(Schedulers.elastic());
     }
@@ -94,7 +95,7 @@ public class MemberController {
             method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Mono<Member> update(@RequestBody Member mb) {
+    public Mono<Member> update(@RequestBody Member mb, ApiKey apiKey) {
         return validationHelper.validate(mb)
                 .flatMap( data -> memberService.update(mb))
                 .subscribeOn(Schedulers.elastic());
